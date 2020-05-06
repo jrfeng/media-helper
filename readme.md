@@ -2,9 +2,11 @@ Android media helper. Help handle media button, audio focus and become noise.
 
 **Helper:**
 
-1. [**`MediaButtonHelper`**](./doc/media/helper/MediaButtonHelper.html)
-2. [**`AudioFocusHelper`**](./doc/media/helper/AudioFocusHelper.html)
-3. [**`BecomeNoiseHelper`**](./doc/media/helper/BecomeNoiseHelper.html)
+1. [**`MediaButtonHelper`**](./docs/media/helper/MediaButtonHelper.html)
+2. [**`AudioFocusHelper`**](./docs/media/helper/AudioFocusHelper.html)
+3. [**`BecomeNoiseHelper`**](./docs/media/helper/BecomeNoiseHelper.html)
+
+[**`Document`**](./docs/index.html)
 
 ## How to use
 
