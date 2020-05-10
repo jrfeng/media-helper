@@ -14,6 +14,50 @@ import java.util.TimerTask;
 
 /**
  * 用于帮助监听系统的 <b>Intent.ACTION_MEDIA_BUTTON</b> 媒体按钮事件。
+ * <p>
+ * 你可以通过调用 {@link #registerMediaButtonReceiver()} 来注册一个媒体按钮广播监听器。
+ * <p>
+ * 如果你使用了 MediaSession 框架，那么可以不调用 {@link #registerMediaButtonReceiver()} 来注册媒体按钮广
+ * 播监听器，而是在 AndroidManifest.xml 文件中进行注册。
+ * <p>
+ * <p><b>例：</b></p>
+ * 在 AndroidManifest.xml 文件中注册媒体按钮广播监听器：
+ * <p>
+ * <code>
+ * <pre>
+ * &lt;receiver android:name="androidx.media.session.MediaButtonReceiver" &gt;
+ *     &lt;intent-filter&gt;
+ *         &lt;action android:name="android.intent.action.MEDIA_BUTTON" /&gt;
+ *     &lt;/intent-filter&gt;
+ * &lt;/receiver&gt;
+ * </pre>
+ * <code/>
+ * </p>
+ * 然后像下面这样配置你的 Service：
+ * <p>
+ * <code>
+ * <pre>
+ * &lt;service android:name="com.example.android.MediaPlaybackService" &gt;
+ *     &lt;intent-filter&gt;
+ *         &lt;action android:name="android.intent.action.MEDIA_BUTTON" /&gt;
+ *     &lt;/intent-filter&gt;
+ * &lt;/service&gt;
+ * </pre>
+ * </code>
+ * </p>
+ * 最后，在 Service 的 onStartCommand() 方法中调用 {@link #handleMediaButton(Context, Intent)} 方法来处理媒体按钮事件：
+ * <p>
+ * <code>
+ * <pre>
+ * &#64;Override
+ * public int onStartCommand(Intent intent, int flags, int startId) {
+ *     myMediaButtonHelper.handleMediaButton(getApplicationContext(), intent);
+ *
+ *     return super.onStartCommand(intent, flags, startId);
+ * }
+ * </pre>
+ * </code>
+ * </p>
  */
 public class MediaButtonHelper {
     private Context mContext;
@@ -37,18 +81,20 @@ public class MediaButtonHelper {
         };
     }
 
-    private void handleMediaButton(Context context, Intent intent) {
+    public boolean handleMediaButton(Context context, Intent intent) {
         if (notMediaButtonAction(intent)) {
-            return;
+            return false;
         }
 
         OnMediaButtonActionListener listener = mListenerWeakReference.get();
         if (listener == null) {
             unregisterMediaButtonReceiver();
-            return;
+            return false;
         }
 
         listener.onMediaButtonAction(context, intent);
+
+        return true;
     }
 
     private boolean notMediaButtonAction(Intent intent) {
