@@ -96,6 +96,14 @@ public class MediaButtonHelper {
         listener.onMediaButtonAction(context, intent);
     }
 
+    /**
+     * 处理媒体按钮事件。如果媒体事件已被处理，则返回 true，否则返回 false。
+     *
+     * @param context  Context 对象。
+     * @param intent   要处理的媒体事件。
+     * @param listener 媒体事件监听器。
+     * @return 如果媒体事件已被处理，则返回 true，否则返回 false（如果 Intent 中不包含媒体事件，也会返回 false）。
+     */
     public static boolean handleMediaButton(Context context, Intent intent, OnMediaButtonActionListener listener) {
         if (notMediaButtonAction(intent)) {
             return false;
