@@ -45,13 +45,14 @@ import java.util.TimerTask;
  * </pre>
  * </code>
  * </p>
- * 最后，在 Service 的 onStartCommand() 方法中调用 {@link #handleMediaButton(Context, Intent)} 方法来处理媒体按钮事件：
+ * 最后，在 Service 的 onStartCommand() 方法中调用静态方法
+ * {@link #handleMediaButton(Context, Intent, OnMediaButtonActionListener)} 来处理媒体按钮事件：
  * <p>
  * <code>
  * <pre>
  * &#64;Override
  * public int onStartCommand(Intent intent, int flags, int startId) {
- *     myMediaButtonHelper.handleMediaButton(getApplicationContext(), intent);
+ *     MediaButtonHelper.handleMediaButton(getApplicationContext(), intent, myOnMediaButtonActionListener);
  *
  *     return super.onStartCommand(intent, flags, startId);
  * }
@@ -81,14 +82,26 @@ public class MediaButtonHelper {
         };
     }
 
-    public boolean handleMediaButton(Context context, Intent intent) {
+    private void handleMediaButton(Context context, Intent intent) {
         if (notMediaButtonAction(intent)) {
-            return false;
+            return;
         }
 
         OnMediaButtonActionListener listener = mListenerWeakReference.get();
         if (listener == null) {
             unregisterMediaButtonReceiver();
+            return;
+        }
+
+        listener.onMediaButtonAction(context, intent);
+    }
+
+    public static boolean handleMediaButton(Context context, Intent intent, OnMediaButtonActionListener listener) {
+        if (notMediaButtonAction(intent)) {
+            return false;
+        }
+
+        if (listener == null) {
             return false;
         }
 
@@ -97,7 +110,7 @@ public class MediaButtonHelper {
         return true;
     }
 
-    private boolean notMediaButtonAction(Intent intent) {
+    private static boolean notMediaButtonAction(Intent intent) {
         return !Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction());
     }
 
