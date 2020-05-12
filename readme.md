@@ -23,11 +23,11 @@ allprojects {
 }
 ```
 
-**Step 2**. Add the dependency
+**Step 2**. Add the dependency [![](https://jitpack.io/v/jrfeng/media-helper.svg)](https://jitpack.io/#jrfeng/media-helper)
 
 ```gradle
 dependencies {
-	implementation 'com.github.jrfeng:media-helper:1.0'
+	implementation 'com.github.jrfeng:media-helper:1.0.1'
 }
 ```
 
