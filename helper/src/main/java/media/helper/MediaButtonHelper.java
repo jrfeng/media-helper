@@ -31,7 +31,7 @@ import java.util.TimerTask;
  *     &lt;/intent-filter&gt;
  * &lt;/receiver&gt;
  * </pre>
- * <code/>
+ * </code>
  * </p>
  * 然后像下面这样配置你的 Service：
  * <p>

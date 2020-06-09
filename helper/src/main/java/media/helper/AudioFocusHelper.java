@@ -15,7 +15,7 @@ import java.lang.ref.WeakReference;
 /**
  * 用于帮助处理应用程序的音频焦点的获取与丢失。
  * <p>
- * <b>使用方法：<b/>
+ * <b>使用方法：</b>
  * <p>
  * <ol>
  *     <li>创建一个 AudioFocusHelper 对象。需提供以下两个参数：</li>
@@ -87,16 +87,18 @@ public class AudioFocusHelper {
     /**
      * 获取音频焦点。
      *
-     * @param streamType   受焦点请求影响的主要音频流类型。该参数通常是 AudioManager.STREAM_MUSIC。更多音频
-     *                     流类型，请查看 <a href="https://developer.android.google.cn/reference/android/media/AudioManager">AudioManager<a/>
-     *                     类中前缀为 <b>STREAM_</b> 的整形常量。
-     * @param durationHint 可以是这 4 个值之一：
-     *                     1. <b>AudioManager.AUDIOFOCUS_GAIN</>：表示获取未知时长的音频焦点；
-     *                     2. <b>AudioManager.AUDIOFOCUS_GAIN_TRANSIENT<b/>：表示短暂的获取音频焦点；
-     *                     3. <b>AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK<b/>：表示短暂的获取音频焦点，同时指示先前的焦点所有者可以通过降低音量（duck），并继续播放；
-     *                     4. <b>AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE</b>：（API level 19）：表示短暂获取音频焦点，在此期间，其他任何应用程序或系统组件均不应播放任何内容。
-     *                     更多内容，请查看 <a href="https://developer.android.google.cn/reference/android/media/AudioManager">AudioManager<a/> 文档。
-     * @return 返回 AudioManager.AUDIOFOCUS_REQUEST_FAILED（申请成功）或者 AudioManager.AUDIOFOCUS_REQUEST_GRANTED（申请失败）
+     * @param streamType   受焦点请求影响的主要音频流类型。该参数通常是 <code>AudioManager.STREAM_MUSIC</code>。更多音频
+     *                     流类型，请查看 <a target="_blank" href="https://developer.android.google.cn/reference/android/media/AudioManager">AudioManager</a>
+     *                     类中前缀为 <code>STREAM_</code> 的整形常量。
+     * @param durationHint 可以是以下 4 个值之一：
+     *                     <ol>
+     *                         <li><code>AudioManager.AUDIOFOCUS_GAIN</code>：表示获取未知时长的音频焦点；</li>
+     *                         <li><code>AudioManager.AUDIOFOCUS_GAIN_TRANSIENT</code>：表示短暂的获取音频焦点；</li>
+     *                         <li><code>AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK</code>：表示短暂的获取音频焦点，同时指示先前的焦点所有者可以通过降低音量（duck），并继续播放；</li>
+     *                         <li><code>AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE</code>：（API level 19）：表示短暂获取音频焦点，在此期间，其他任何应用程序或系统组件均不应播放任何内容。</li>
+     *                     </ol>
+     *                     更多内容，请查看 <a target="_blank" href="https://developer.android.google.cn/reference/android/media/AudioManager">AudioManager</a> 文档。
+     * @return AudioManager.AUDIOFOCUS_REQUEST_GRANTED（申请成功）或者 AudioManager.AUDIOFOCUS_REQUEST_FAILED（申请失败）
      */
     public int requestAudioFocus(int streamType, int durationHint) {
         if (mAudioManager == null) {
