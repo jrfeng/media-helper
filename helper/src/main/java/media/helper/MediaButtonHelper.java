@@ -154,7 +154,7 @@ public class MediaButtonHelper {
     /**
      * 多媒体回调接口。该类是个抽象类，它实现了 {@link OnMediaButtonActionListener} 接口，并对多媒体相关的媒体按钮事件进行了封装。
      */
-    public abstract class MediaListener implements OnMediaButtonActionListener {
+    public abstract static class MediaListener implements OnMediaButtonActionListener {
         private ClickCounter mClickCounter;
 
         public MediaListener() {
