@@ -15,12 +15,25 @@ import java.util.TimerTask;
 /**
  * 用于帮助监听系统的 <b>Intent.ACTION_MEDIA_BUTTON</b> 媒体按钮事件。
  * <p>
- * 你可以通过调用 {@link #registerMediaButtonReceiver()} 来注册一个媒体按钮广播监听器。
+ * 该帮助类提供了 2 种注册 MediaButton 事件监听器的方法：
  * <p>
- * 如果你使用了 MediaSession 框架，那么可以不调用 {@link #registerMediaButtonReceiver()} 来注册媒体按钮广
- * 播监听器，而是在 AndroidManifest.xml 文件中进行注册。
+ * <b>第一种方法</b>：通过调用 {@link #registerMediaButtonReceiver()} 来注册一个媒体按钮广播监听器。
  * <p>
- * <p><b>例：</b></p>
+ * <b>例 1：</b><br>
+ * <code>
+ * <pre>
+ * // 注册 MediaButton 事件监听器
+ * mediaButtonHelper.registerMediaButtonReceiver()
+ *
+ * // 取消注册 MediaButton 事件监听器
+ * mediaButtonHelper.unregisterMediaButtonReceiver()
+ * </pre>
+ * </code>
+ * <p>
+ * <b>第二张方法</b>：通过 AndroidManifest.xml 文件进行注册。如果你使用了 MediaSession 框架，推荐使用这种方
+ * 法进行注册。
+ * <p>
+ * <p><b>例 2：</b></p>
  * 在 AndroidManifest.xml 文件中注册媒体按钮广播监听器：
  * <p>
  * <code>
@@ -145,7 +158,7 @@ public class MediaButtonHelper {
     }
 
     /**
-     * 回调接口。但检测到某个媒体按钮被触发时，该回调接口中的方法会被调用。
+     * 回调接口。当检测到某个媒体按钮被触发时，该回调接口中的方法会被调用。
      */
     public interface OnMediaButtonActionListener {
         void onMediaButtonAction(Context context, Intent intent);
