@@ -8,7 +8,6 @@ import android.view.KeyEvent;
 
 import androidx.annotation.NonNull;
 
-import java.lang.ref.WeakReference;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -75,7 +74,7 @@ import java.util.TimerTask;
  */
 public class MediaButtonHelper {
     private Context mContext;
-    private WeakReference<OnMediaButtonActionListener> mListenerWeakReference;
+    private OnMediaButtonActionListener mListener;
 
     private BroadcastReceiver mMediaButtonReceiver;
     private boolean mRegistered;
@@ -85,7 +84,7 @@ public class MediaButtonHelper {
         ObjectUtil.requireNonNull(listener);
 
         mContext = context.getApplicationContext();
-        mListenerWeakReference = new WeakReference<>(listener);
+        mListener = listener;
 
         mMediaButtonReceiver = new BroadcastReceiver() {
             @Override
@@ -100,13 +99,7 @@ public class MediaButtonHelper {
             return;
         }
 
-        OnMediaButtonActionListener listener = mListenerWeakReference.get();
-        if (listener == null) {
-            unregisterMediaButtonReceiver();
-            return;
-        }
-
-        listener.onMediaButtonAction(context, intent);
+        mListener.onMediaButtonAction(context, intent);
     }
 
     /**

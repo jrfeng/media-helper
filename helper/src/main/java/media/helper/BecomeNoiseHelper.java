@@ -17,7 +17,7 @@ import java.lang.ref.WeakReference;
  */
 public class BecomeNoiseHelper {
     private Context mContext;
-    private WeakReference<OnBecomeNoiseListener> mListenerWeakReference;
+    private OnBecomeNoiseListener mListener;
 
     private BroadcastReceiver mBecomeNoiseReceiver;
     private boolean mRegistered;
@@ -27,18 +27,12 @@ public class BecomeNoiseHelper {
         ObjectUtil.requireNonNull(listener);
 
         mContext = context.getApplicationContext();
-        mListenerWeakReference = new WeakReference<>(listener);
+        mListener = listener;
 
         mBecomeNoiseReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                OnBecomeNoiseListener cb = mListenerWeakReference.get();
-                if (cb == null) {
-                    unregisterBecomeNoiseReceiver();
-                    return;
-                }
-
-                cb.onBecomeNoise();
+                mListener.onBecomeNoise();
             }
         };
     }

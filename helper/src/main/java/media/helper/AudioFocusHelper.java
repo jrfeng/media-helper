@@ -10,8 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import java.lang.ref.WeakReference;
-
 /**
  * 用于帮助处理应用程序的音频焦点的获取与丢失。
  * <p>
@@ -31,7 +29,8 @@ import java.lang.ref.WeakReference;
 public class AudioFocusHelper {
     @Nullable
     private AudioManager mAudioManager;
-    private WeakReference<OnAudioFocusChangeListener> mCallbackWeakReference;
+
+    private OnAudioFocusChangeListener mListener;
 
     private AudioFocusRequest mAudioFocusRequest;
     private AudioManager.OnAudioFocusChangeListener mAudioFocusChangeListener;
@@ -45,8 +44,7 @@ public class AudioFocusHelper {
         ObjectUtil.requireNonNull(listener);
 
         mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        mCallbackWeakReference = new WeakReference<>(listener);
-
+        mListener = listener;
         initAudioFocusChangeListener();
     }
 
@@ -54,28 +52,22 @@ public class AudioFocusHelper {
         mAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
             @Override
             public void onAudioFocusChange(int focusChange) {
-                OnAudioFocusChangeListener listener = mCallbackWeakReference.get();
-                if (listener == null) {
-                    abandonAudioFocus();
-                    return;
-                }
-
                 switch (focusChange) {
                     case AudioManager.AUDIOFOCUS_LOSS:
-                        listener.onLoss();
+                        mListener.onLoss();
                         mLossTransient = false;
                         mLossTransientCanDuck = false;
                         break;
                     case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                         mLossTransient = true;
-                        listener.onLossTransient();
+                        mListener.onLossTransient();
                         break;
                     case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                         mLossTransientCanDuck = true;
-                        listener.onLossTransientCanDuck();
+                        mListener.onLossTransientCanDuck();
                         break;
                     case AudioManager.AUDIOFOCUS_GAIN:
-                        listener.onGain(mLossTransient, mLossTransientCanDuck);
+                        mListener.onGain(mLossTransient, mLossTransientCanDuck);
                         mLossTransient = false;
                         mLossTransientCanDuck = false;
                         break;
