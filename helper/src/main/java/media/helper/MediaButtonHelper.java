@@ -1,9 +1,11 @@
 package media.helper;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.view.KeyEvent;
 
 import androidx.annotation.NonNull;
@@ -74,9 +76,11 @@ import java.util.TimerTask;
  */
 public class MediaButtonHelper {
     private Context mContext;
+    private AudioManager mAudioManager;
     private OnMediaButtonActionListener mListener;
 
     private BroadcastReceiver mMediaButtonReceiver;
+    private ComponentName mReceiverComponentName;
     private boolean mRegistered;
 
     public MediaButtonHelper(@NonNull Context context, @NonNull OnMediaButtonActionListener listener) {
@@ -84,6 +88,7 @@ public class MediaButtonHelper {
         ObjectUtil.requireNonNull(listener);
 
         mContext = context.getApplicationContext();
+        mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         mListener = listener;
 
         mMediaButtonReceiver = new BroadcastReceiver() {
@@ -92,6 +97,8 @@ public class MediaButtonHelper {
                 handleMediaButton(context, intent);
             }
         };
+
+        mReceiverComponentName = new ComponentName(context, mMediaButtonReceiver.getClass());
     }
 
     private void handleMediaButton(Context context, Intent intent) {
@@ -136,6 +143,7 @@ public class MediaButtonHelper {
         intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
 
         mContext.registerReceiver(mMediaButtonReceiver, intentFilter);
+        mAudioManager.registerMediaButtonEventReceiver(mReceiverComponentName);
 
         mRegistered = true;
     }
@@ -145,6 +153,7 @@ public class MediaButtonHelper {
      */
     public void unregisterMediaButtonReceiver() {
         if (mRegistered) {
+            mAudioManager.unregisterMediaButtonEventReceiver(mReceiverComponentName);
             mContext.unregisterReceiver(mMediaButtonReceiver);
             mRegistered = false;
         }
