@@ -84,7 +84,7 @@ public class MediaButtonHelper {
     private boolean mRegistered;
 
     public MediaButtonHelper(@NonNull Context context, @NonNull OnMediaButtonActionListener listener) {
-        ObjectUtil.requireNonNull(listener);
+        ObjectUtil.requireNonNull(context);
         ObjectUtil.requireNonNull(listener);
 
         mContext = context.getApplicationContext();
@@ -140,7 +140,6 @@ public class MediaButtonHelper {
      */
     public void registerMediaButtonReceiver() {
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_MEDIA_BUTTON);
-        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
 
         mContext.registerReceiver(mMediaButtonReceiver, intentFilter);
         mAudioManager.registerMediaButtonEventReceiver(mReceiverComponentName);
