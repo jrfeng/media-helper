@@ -4,109 +4,35 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.os.Bundle;
 import android.view.KeyEvent;
-
-import androidx.annotation.NonNull;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 /**
  * 用于帮助监听系统的 <b>Intent.ACTION_MEDIA_BUTTON</b> 媒体按钮事件。
- * <p>
- * 该帮助类提供了 2 种注册 MediaButton 事件监听器的方法：
- * <p>
- * <b>第一种方法</b>：通过调用 {@link #registerMediaButtonReceiver()} 来注册一个媒体按钮广播监听器。
- * <p>
- * <b>例 1：</b><br>
- * <code>
- * <pre>
- * // 注册 MediaButton 事件监听器
- * mediaButtonHelper.registerMediaButtonReceiver()
- *
- * // 取消注册 MediaButton 事件监听器
- * mediaButtonHelper.unregisterMediaButtonReceiver()
- * </pre>
- * </code>
- * <p>
- * <b>第二张方法</b>：通过 AndroidManifest.xml 文件进行注册。如果你使用了 MediaSession 框架，推荐使用这种方
- * 法进行注册。
- * <p>
- * <p><b>例 2：</b></p>
- * 在 AndroidManifest.xml 文件中注册媒体按钮广播监听器：
- * <p>
- * <code>
- * <pre>
- * &lt;receiver android:name="androidx.media.session.MediaButtonReceiver" &gt;
- *     &lt;intent-filter&gt;
- *         &lt;action android:name="android.intent.action.MEDIA_BUTTON" /&gt;
- *     &lt;/intent-filter&gt;
- * &lt;/receiver&gt;
- * </pre>
- * </code>
- * </p>
- * 然后像下面这样配置你的 Service：
- * <p>
- * <code>
- * <pre>
- * &lt;service android:name="com.example.android.MediaPlaybackService" &gt;
- *     &lt;intent-filter&gt;
- *         &lt;action android:name="android.intent.action.MEDIA_BUTTON" /&gt;
- *     &lt;/intent-filter&gt;
- * &lt;/service&gt;
- * </pre>
- * </code>
- * </p>
- * 最后，在 Service 的 onStartCommand() 方法中调用静态方法
- * {@link #handleMediaButton(Context, Intent, OnMediaButtonActionListener)} 来处理媒体按钮事件：
- * <p>
- * <code>
- * <pre>
- * &#64;Override
- * public int onStartCommand(Intent intent, int flags, int startId) {
- *     MediaButtonHelper.handleMediaButton(getApplicationContext(), intent, myOnMediaButtonActionListener);
- *
- *     return super.onStartCommand(intent, flags, startId);
- * }
- * </pre>
- * </code>
- * </p>
  */
-public class MediaButtonHelper {
-    private Context mContext;
-    private AudioManager mAudioManager;
-    private OnMediaButtonActionListener mListener;
+public class MediaButtonHelper extends BroadcastReceiver {
 
-    private BroadcastReceiver mMediaButtonReceiver;
-    private ComponentName mReceiverComponentName;
-    private boolean mRegistered;
-
-    public MediaButtonHelper(@NonNull Context context, @NonNull OnMediaButtonActionListener listener) {
-        ObjectUtil.requireNonNull(context);
-        ObjectUtil.requireNonNull(listener);
-
-        mContext = context.getApplicationContext();
-        mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        mListener = listener;
-
-        mMediaButtonReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                handleMediaButton(context, intent);
-            }
-        };
-
-        mReceiverComponentName = new ComponentName(context, mMediaButtonReceiver.getClass());
-    }
-
-    private void handleMediaButton(Context context, Intent intent) {
+    @Override
+    public void onReceive(Context context, Intent intent) {
         if (notMediaButtonAction(intent)) {
             return;
         }
 
-        mListener.onMediaButtonAction(context, intent);
+        Intent serviceIntent = new Intent("android.intent.action.MEDIA_BUTTON");
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            serviceIntent.putExtras(extras);
+        }
+
+        context.startService(serviceIntent);
+    }
+
+    private static boolean notMediaButtonAction(Intent intent) {
+        return !Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction());
     }
 
     /**
@@ -131,31 +57,28 @@ public class MediaButtonHelper {
         return true;
     }
 
-    private static boolean notMediaButtonAction(Intent intent) {
-        return !Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction());
-    }
-
     /**
-     * 注册 <b>Intent.ACTION_MEDIA_BUTTON</b> 媒体按钮监听器。
+     * 将 {@link MediaButtonHelper} 注册为媒体按钮事件接收器。
      */
-    public void registerMediaButtonReceiver() {
-        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_MEDIA_BUTTON);
-
-        mContext.registerReceiver(mMediaButtonReceiver, intentFilter);
-        mAudioManager.registerMediaButtonEventReceiver(mReceiverComponentName);
-
-        mRegistered = true;
-    }
-
-    /**
-     * 取消注册 <b>Intent.ACTION_MEDIA_BUTTON</b> 媒体按钮监听器。
-     */
-    public void unregisterMediaButtonReceiver() {
-        if (mRegistered) {
-            mAudioManager.unregisterMediaButtonEventReceiver(mReceiverComponentName);
-            mContext.unregisterReceiver(mMediaButtonReceiver);
-            mRegistered = false;
+    public static void registerMediaButtonReceiver(Context context) {
+        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        if (audioManager == null) {
+            throw new IllegalStateException("AudioManager is null");
         }
+
+        audioManager.registerMediaButtonEventReceiver(new ComponentName(context, MediaButtonHelper.class));
+    }
+
+    /**
+     * 取消将 {@link MediaButtonHelper} 注册为媒体按钮事件接收器。
+     */
+    public static void unregisterMediaButtonReceiver(Context context) {
+        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        if (audioManager == null) {
+            throw new IllegalStateException("AudioManager is null");
+        }
+
+        audioManager.unregisterMediaButtonEventReceiver(new ComponentName(context, MediaButtonHelper.class));
     }
 
     /**
