@@ -16,9 +16,9 @@ public class HeadsetHookHelper {
     private ClickCounter mClickCounter;
 
     /**
-     * 使用默认的点击事件间隔 {@link #DEFAULT_CLICK_INTERVAL} 构造一个 HeadsetHookHelper 对象。
+     * 使用默认的点击事件时间间隔 {@link #DEFAULT_CLICK_INTERVAL} 构造一个 HeadsetHookHelper 对象。
      * <p>
-     * 默认的点击时间间隔为 300 毫秒。
+     * 默认的点击事件时间间隔为 300 毫秒。
      *
      * @param listener 点击事件监听器
      */
@@ -27,7 +27,7 @@ public class HeadsetHookHelper {
     }
 
     /**
-     * 使用 {@code clickInterval} 参数指定的点击事件间隔构造一个 HeadsetHookHelper 对象。
+     * 使用 {@code clickInterval} 参数指定的点击事件时间间隔构造一个 HeadsetHookHelper 对象。
      *
      * @param clickInterval 两次点击事件的最大时间间隔（单位：毫秒）
      * @param listener      点击事件监听器
