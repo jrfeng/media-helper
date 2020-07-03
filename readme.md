@@ -27,7 +27,7 @@ allprojects {
 
 ```gradle
 dependencies {
-	implementation 'com.github.jrfeng:media-helper:1.0.1'
+	implementation 'com.github.jrfeng:media-helper:1.0.5'
 }
 ```
 
