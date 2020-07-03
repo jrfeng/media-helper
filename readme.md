@@ -2,7 +2,7 @@ Android media helper. Help handle media button, audio focus and become noise.
 
 **Helper:**
 
-1. [**`MediaButtonHelper`**](https://jrfeng.github.io/media-helper/media/helper/MediaButtonHelper.html)
+1. [**`HeadsetHookHelper`**](https://jrfeng.github.io/media-helper/media/helper/HeadsetHookHelper.html)
 2. [**`AudioFocusHelper`**](https://jrfeng.github.io/media-helper/media/helper/AudioFocusHelper.html)
 3. [**`BecomeNoiseHelper`**](https://jrfeng.github.io/media-helper/media/helper/BecomeNoiseHelper.html)
 

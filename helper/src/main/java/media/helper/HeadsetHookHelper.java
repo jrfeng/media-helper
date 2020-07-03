@@ -10,6 +10,31 @@ import java.util.TimerTask;
 
 /**
  * 用于帮助处理耳机上的按钮点击事件（用于实现 “线控播放”）。
+ * <p>
+ * 使用步骤：<br>
+ * <ol>
+ *     <li>创建一个 HeadsetHookHelper 对象；</li>
+ *     <li>在媒体按钮监听器中调用 {@link #handleMediaButton(Intent)} 处理媒体按钮事件即可。</li>
+ * </ol>
+ * <p>
+ * <b>例：</b><br>
+ * <code>
+ * <pre>
+ * HeadsetHookHelper headsetHookHelper = new HeadsetHookHelper(new OnHeadsetHookClickListener() {
+ *     &#64;Override
+ *     public void onHeadsetHookClicked(int clickCount) {
+ *         // do something
+ *     }
+ * });
+ * ...
+ *
+ * // MediaSessionCompat.Callback
+ * &#64;Override
+ * public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
+ *     return headsetHookHelper.handleMediaButton(mediaButtonEvent);
+ * }
+ * </pre>
+ * </code>
  */
 public class HeadsetHookHelper {
     public static final int DEFAULT_CLICK_INTERVAL = 300;  // 单位: 毫秒 ms
