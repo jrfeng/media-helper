@@ -16,10 +16,10 @@ Add it in your root build.gradle at the end of repositories:
 
 ```gradle
 allprojects {
-	repositories {
-		...
-		maven { url 'https://jitpack.io' }
-	}
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
 }
 ```
 
@@ -27,7 +27,7 @@ allprojects {
 
 ```gradle
 dependencies {
-	implementation 'com.github.jrfeng:media-helper:1.0.5'
+    implementation 'com.github.jrfeng:media-helper:1.0.5'
 }
 ```
 
