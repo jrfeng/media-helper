@@ -74,13 +74,19 @@ public class HeadsetHookHelper {
         }
 
         if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_HEADSETHOOK) {
-            mClickCounter.putEvent();
+            consumeMediaButtonEvent(keyEvent);
             return true;
         }
 
         mClickCounter.reset();
 
         return false;
+    }
+
+    public void consumeMediaButtonEvent(KeyEvent keyEvent) {
+        if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
+            mClickCounter.putEvent();
+        }
     }
 
     public interface OnHeadsetHookClickListener {
