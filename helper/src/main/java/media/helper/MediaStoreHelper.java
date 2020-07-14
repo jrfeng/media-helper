@@ -61,6 +61,8 @@ public final class MediaStoreHelper {
     }
 
     public interface Scanner<T> {
+        int MIN_UPDATE_THRESHOLD = 200;
+
         Scanner<T> projection(String[] projection);
 
         Scanner<T> selection(String selection);
@@ -68,6 +70,14 @@ public final class MediaStoreHelper {
         Scanner<T> selectionArgs(String[] args);
 
         Scanner<T> sortOrder(String sortOrder);
+
+        /**
+         * 设置更新 UI 刷新的阈值时间（单位：毫秒），避免 UI 刷新速度跟不上数据流的速度。如果两个数据的发送时间
+         * 间隔小于 threshold 值，本次 UI 刷新将被忽略。
+         *
+         * @param threshold UI 刷新的阈值，不能小于 {@link #MIN_UPDATE_THRESHOLD}
+         */
+        Scanner<T> updateThreshold(int threshold);
 
         void cancel();
 
@@ -266,14 +276,22 @@ public final class MediaStoreHelper {
         private ContentResolver mResolver;
         private Decoder<T> mDecoder;
 
+        private OnScanCallback<T> mCallback;
         private Handler mMainHandler;
+        private int mThreshold;
+
+        private boolean mRunning;
         private boolean mCancelled;
+        private boolean mFinished;
+
+        private long mLastUpdateTime;
 
         public BaseScanner(Uri uri, ContentResolver resolver, Decoder<T> decoder) {
             mUri = uri;
             mResolver = resolver;
             mDecoder = decoder;
 
+            mThreshold = MIN_UPDATE_THRESHOLD;
             mMainHandler = new Handler(Looper.getMainLooper());
         }
 
@@ -301,6 +319,33 @@ public final class MediaStoreHelper {
             return this;
         }
 
+        @Override
+        public Scanner<T> updateThreshold(int threshold) {
+            mThreshold = threshold;
+
+            if (mThreshold < MIN_UPDATE_THRESHOLD) {
+                mThreshold = MIN_UPDATE_THRESHOLD;
+            }
+
+            return this;
+        }
+
+        protected synchronized final boolean isRunning() {
+            return mRunning;
+        }
+
+        protected synchronized final void setRunning(boolean running) {
+            mRunning = running;
+        }
+
+        protected synchronized final boolean isFinished() {
+            return mFinished;
+        }
+
+        protected synchronized final void setFinished(boolean finished) {
+            mFinished = finished;
+        }
+
         protected synchronized final boolean isCancelled() {
             return mCancelled;
         }
@@ -308,75 +353,97 @@ public final class MediaStoreHelper {
         @Override
         public synchronized final void cancel() {
             mCancelled = true;
+            setRunning(false);
+            setFinished(true);
         }
 
         @Override
-        public void scan(@NonNull final OnScanCallback<T> callback) {
+        public void scan(@NonNull final OnScanCallback<T> callback) throws IllegalStateException {
             ObjectUtil.requireNonNull(callback);
+
+            if (isRunning()) {
+                throw new IllegalStateException("scanner is running.");
+            }
+
+            mCallback = callback;
 
             mExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    if (isCancelled()) {
+                    if (isCancelled() || isFinished()) {
                         return;
                     }
 
-                    notifyStartScan(callback);
+                    setRunning(true);
+                    setFinished(false);
+
+                    notifyStartScan();
 
                     Cursor cursor = mResolver.query(mUri, mProjection, mSelection, mSelectionArgs, mSortOrder);
                     if (cursor != null && cursor.moveToFirst()) {
-                        forEachCursor(cursor, callback);
+                        forEachCursor(cursor);
                         cursor.close();
                         return;
                     }
 
-                    notifyFinished(callback, new ArrayList<T>());
+                    notifyFinished(new ArrayList<T>());
                 }
             });
         }
 
-        private void forEachCursor(Cursor cursor, OnScanCallback<T> callback) {
+        private void forEachCursor(Cursor cursor) {
             int progress = 0;
             int max = cursor.getCount();
             List<T> items = new ArrayList<>(max);
 
             do {
                 progress++;
-                items.add(decode(cursor, callback, progress, max));
+                items.add(decode(cursor, progress, max));
             } while (cursor.moveToNext() && !isCancelled());
 
-            notifyFinished(callback, items);
+            notifyFinished(items);
         }
 
-        private T decode(Cursor cursor, final OnScanCallback<T> callback, final int progress, final int max) {
+        private T decode(Cursor cursor, final int progress, final int max) {
             T item = mDecoder.decode(cursor);
-            notifyProgressUpdate(callback, progress, max, item);
+            notifyProgressUpdate(progress, max, item);
             return item;
         }
 
-        private void notifyStartScan(final OnScanCallback<T> callback) {
+        private void notifyStartScan() {
             mMainHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    callback.onStartScan();
+                    mCallback.onStartScan();
                 }
             });
         }
 
-        private void notifyProgressUpdate(final OnScanCallback<T> callback, final int progress, final int max, final T item) {
+        private void notifyProgressUpdate(final int progress, final int max, final T item) {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - mLastUpdateTime < mThreshold) {
+                return;
+            }
+
+            if (isCancelled() || isFinished()) {
+                return;
+            }
+
+            mLastUpdateTime = currentTime;
             mMainHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    callback.onUpdateProgress(progress, max, item);
+                    mCallback.onUpdateProgress(progress, max, item);
                 }
             });
         }
 
-        private void notifyFinished(final OnScanCallback<T> callback, final List<T> items) {
+        private void notifyFinished(final List<T> items) {
+            setFinished(true);
             mMainHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    callback.onFinished(items);
+                    mCallback.onFinished(items);
                 }
             });
         }
