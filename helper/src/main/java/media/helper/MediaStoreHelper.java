@@ -1,6 +1,7 @@
 package media.helper;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -19,7 +20,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class MediaStoreHelper {
+public final class MediaStoreHelper {
     private static Executor mExecutor = new ThreadPoolExecutor(
             Runtime.getRuntime().availableProcessors(),
             Runtime.getRuntime().availableProcessors() * 2,
@@ -33,6 +34,10 @@ public class MediaStoreHelper {
                     return thread;
                 }
             });
+
+    private MediaStoreHelper() {
+        throw new AssertionError();
+    }
 
     public static <T> Scanner<T> scanAudio(@NonNull ContentResolver resolver, @NonNull Decoder<T> decoder) {
         ObjectUtil.requireNonNull(resolver);
@@ -80,127 +85,57 @@ public class MediaStoreHelper {
     public static abstract class Decoder<T> {
         public abstract T decode(Cursor cursor);
 
-        @RequiresApi(Build.VERSION_CODES.Q)
-        public static String getBucketDisplayName(Cursor cursor) {
-            return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME));
-        }
-
-        @RequiresApi(Build.VERSION_CODES.Q)
-        public static int getBucketId(Cursor cursor) {
-            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_ID));
-        }
-
-        public static String getData(Cursor cursor) {
-            return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
-        }
-
         public static int getDateAdded(Cursor cursor) {
             return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_ADDED));
-        }
-
-        @RequiresApi(Build.VERSION_CODES.Q)
-        public static int getDateExpires(Cursor cursor) {
-            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_EXPIRES));
         }
 
         public static int getDateModified(Cursor cursor) {
             return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_MODIFIED));
         }
 
-        @RequiresApi(Build.VERSION_CODES.Q)
-        public static int getDateTaken(Cursor cursor) {
-            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_TAKEN));
-        }
-
         public static String getDisplayName(Cursor cursor) {
             return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME));
-        }
-
-        @RequiresApi(Build.VERSION_CODES.Q)
-        public static String getDocumentId(Cursor cursor) {
-            return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DOCUMENT_ID));
-        }
-
-        @RequiresApi(Build.VERSION_CODES.Q)
-        public static String getDuration(Cursor cursor) {
-            return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DURATION));
-        }
-
-        @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
-        public static int getHeight(Cursor cursor) {
-            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.HEIGHT));
-        }
-
-        @RequiresApi(Build.VERSION_CODES.Q)
-        public static String getInstanceId(Cursor cursor) {
-            return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.INSTANCE_ID));
-        }
-
-        @RequiresApi(Build.VERSION_CODES.Q)
-        public static boolean isPending(Cursor cursor) {
-            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.IS_PENDING)) != 0;
         }
 
         public static String getMimeType(Cursor cursor) {
             return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE));
         }
 
-        @RequiresApi(Build.VERSION_CODES.Q)
-        private static int getOrientation(Cursor cursor) {
-            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.ORIENTATION));
-        }
-
-        @RequiresApi(Build.VERSION_CODES.Q)
-        private static String getOriginalDocumentId(Cursor cursor) {
-            return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.ORIGINAL_DOCUMENT_ID));
-        }
-
-        @RequiresApi(Build.VERSION_CODES.Q)
-        private static String getOwnerPackageName(Cursor cursor) {
-            return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.OWNER_PACKAGE_NAME));
-        }
-
-        @RequiresApi(Build.VERSION_CODES.Q)
-        private static String getRelativePath(Cursor cursor) {
-            return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.RELATIVE_PATH));
-        }
-
-        private static int getSize(Cursor cursor) {
+        public static int getSize(Cursor cursor) {
             return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE));
         }
 
-        private static String getTitle(Cursor cursor) {
+        public static String getTitle(Cursor cursor) {
             return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.TITLE));
         }
 
-        @RequiresApi(Build.VERSION_CODES.Q)
-        private static String getVolumeName(Cursor cursor) {
-            return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.VOLUME_NAME));
+        public static int getId(Cursor cursor) {
+            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID));
         }
 
-        @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
-        private static int getWidth(Cursor cursor) {
-            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.WIDTH));
-        }
-
-        public static int getAudioAlbumId(Cursor cursor) {
-            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM_ID));
-        }
-
-        public static String getAudioAlbumKey(Cursor cursor) {
-            return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM_KEY));
+        public static String getAudioArtist(Cursor cursor) {
+            return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
         }
 
         public static int getAudioArtistId(Cursor cursor) {
             return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST_ID));
         }
 
-        public static String getAudioArtistKey(Cursor cursor) {
-            return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST_KEY));
+        public static String getAudioAlbum(Cursor cursor) {
+            return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM));
         }
 
-        public static int getAudioBookmark(Cursor cursor) {
-            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.BOOKMARK));
+        public static int getAudioAlbumId(Cursor cursor) {
+            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM_ID));
+        }
+
+        public static boolean audioIsAlarm(Cursor cursor) {
+            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.IS_ALARM)) != 0;
+        }
+
+        @RequiresApi(Build.VERSION_CODES.Q)
+        public static boolean audioIsAudioBook(Cursor cursor) {
+            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.IS_AUDIOBOOK)) != 0;
         }
 
         public static boolean audioIsMusic(Cursor cursor) {
@@ -211,16 +146,17 @@ public class MediaStoreHelper {
             return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.IS_NOTIFICATION)) != 0;
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.Q)
+        public static boolean audioIsPending(Cursor cursor) {
+            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.IS_PENDING)) != 0;
+        }
+
         public static boolean audioIsPodcast(Cursor cursor) {
             return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.IS_PODCAST)) != 0;
         }
 
         public static boolean audioIsRingtone(Cursor cursor) {
             return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.IS_RINGTONE)) != 0;
-        }
-
-        public static String getAudioTitleKey(Cursor cursor) {
-            return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.TITLE_KEY));
         }
 
         public static int getAudioTrack(Cursor cursor) {
@@ -231,8 +167,18 @@ public class MediaStoreHelper {
             return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.YEAR));
         }
 
-        public static int getVideoBookmark(Cursor cursor) {
-            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.BOOKMARK));
+        public static Uri getAudioUri(Cursor cursor) {
+            return ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, getId(cursor));
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+        public static int getVideoWidth(Cursor cursor) {
+            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.WIDTH));
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+        public static int getVideoHeight(Cursor cursor) {
+            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.HEIGHT));
         }
 
         public static String getVideoCategory(Cursor cursor) {
@@ -267,6 +213,20 @@ public class MediaStoreHelper {
             return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.TAGS));
         }
 
+        public static Uri getVideoUri(Cursor cursor) {
+            return ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, getId(cursor));
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+        public static int getImageWidth(Cursor cursor) {
+            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.WIDTH));
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+        public static int getImageHeight(Cursor cursor) {
+            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.HEIGHT));
+        }
+
         public static String getImageDescription(Cursor cursor) {
             return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DESCRIPTION));
         }
@@ -289,6 +249,10 @@ public class MediaStoreHelper {
 
         public static String getImagePicasaId(Cursor cursor) {
             return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.PICASA_ID));
+        }
+
+        public static Uri getImageUri(Cursor cursor) {
+            return ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, getId(cursor));
         }
     }
 
