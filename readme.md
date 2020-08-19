@@ -1,18 +1,17 @@
-Android media helper. Help handle media button, audio focus and become noise.
+Android 多媒体工具，用于帮助处理耳机的 Headset Hook 点击事件（实现线控播放）、处理音频焦点的丢失与获取和帮助处理 become noise 事件，并用于帮助扫描本地媒体项目。
 
-**Helper:**
+**帮助类:**
 
-1. [**`HeadsetHookHelper`**](https://jrfeng.github.io/media-helper/media/helper/HeadsetHookHelper.html)
-2. [**`AudioFocusHelper`**](https://jrfeng.github.io/media-helper/media/helper/AudioFocusHelper.html)
-3. [**`BecomeNoiseHelper`**](https://jrfeng.github.io/media-helper/media/helper/BecomeNoiseHelper.html)
+1. [**`HeadsetHookHelper`**](https://jrfeng.github.io/media-helper/media/helper/HeadsetHookHelper.html)：用于帮助处理耳机的 Headset Hook 点击事件（实现线控播放）。
+2. [**`AudioFocusHelper`**](https://jrfeng.github.io/media-helper/media/helper/AudioFocusHelper.html)：用于帮助处理音频焦点的丢失与获取事件。
+3. [**`BecomeNoiseHelper`**](https://jrfeng.github.io/media-helper/media/helper/BecomeNoiseHelper.html)：用于帮助处理 become noise 事件.
+4. [**`MediaStoreHelper`**](https://jrfeng.github.io/media-helper/media/helper/MediaStoreHelper.html)：用于帮助扫描本地媒体项目.
 
 [**`Document`**](https://jrfeng.github.io/media-helper/)
 
-## How to use
+## 项目配置
 
-**Step 1**. Add the JitPack repository to your build file
-
-Add it in your root build.gradle at the end of repositories:
+**第 1 步**：在你的项目的根目录下的 build.gradle 文件中添加以下配置：
 
 ```gradle
 allprojects {
@@ -23,11 +22,11 @@ allprojects {
 }
 ```
 
-**Step 2**. Add the dependency [![](https://jitpack.io/v/jrfeng/media-helper.svg)](https://jitpack.io/#jrfeng/media-helper)
+**第 2 步**：添加依赖 [![](https://jitpack.io/v/jrfeng/media-helper.svg)](https://jitpack.io/#jrfeng/media-helper)
 
 ```gradle
 dependencies {
-    implementation 'com.github.jrfeng:media-helper:1.0.6'
+    implementation 'com.github.jrfeng:media-helper:1.0.7'
 }
 ```
 
