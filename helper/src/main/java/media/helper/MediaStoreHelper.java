@@ -24,6 +24,13 @@ import java.util.concurrent.TimeUnit;
  * 用于帮助扫描本地的音频、视频和图片媒体。
  * <p>
  * <b>注意！扫描本地媒体文件必须申请存储器访问权限：{@code "android.permission.READ_EXTERNAL_STORAGE"}。</b>
+ * <p>
+ * 使用以下静态方法来扫描对应的媒体库：
+ * <ul>
+ *     <li>{@link MediaStoreHelper#scanAudio(ContentResolver, Decoder)}：扫描音频文件</li>
+ *     <li>{@link MediaStoreHelper#scanVideo(ContentResolver, Decoder)}：扫描视频文件</li>
+ *     <li>{@link MediaStoreHelper#scanImages(ContentResolver, Decoder)}：扫描图片文件</li>
+ * </ul>
  */
 public final class MediaStoreHelper {
     private static Executor mExecutor = new ThreadPoolExecutor(
@@ -49,8 +56,8 @@ public final class MediaStoreHelper {
      *
      * @param resolver ContentResolver 对象，不能为 null
      * @param decoder  {@link Decoder} 对象，不能为 null
-     * @param <T>      与媒体文件相关的实体类型
-     * @return {@link Scanner} 对象，调用该对象的 {@link Scanner#scan(OnScanCallback)} 方法即可开始扫描本地媒体文件
+     * @param <T>      媒体文件对应的实体类型
+     * @return {@link Scanner} 对象，调用该对象的 {@code scan()} 方法即可开始扫描本地媒体文件
      */
     public static <T> Scanner<T> scanAudio(@NonNull ContentResolver resolver, @NonNull Decoder<T> decoder) {
         ObjectUtil.requireNonNull(resolver);
@@ -64,8 +71,8 @@ public final class MediaStoreHelper {
      *
      * @param resolver ContentResolver 对象，不能为 null
      * @param decoder  {@link Decoder} 对象，不能为 null
-     * @param <T>      与媒体文件相关的实体类型
-     * @return {@link Scanner} 对象，调用该对象的 {@link Scanner#scan(OnScanCallback)} 方法即可开始扫描本地媒体文件
+     * @param <T>      媒体文件对应的实体类型
+     * @return {@link Scanner} 对象，调用该对象的 {@code scan()} 方法即可开始扫描本地媒体文件
      */
     public static <T> Scanner<T> scanVideo(@NonNull ContentResolver resolver, @NonNull Decoder<T> decoder) {
         ObjectUtil.requireNonNull(resolver);
@@ -79,8 +86,8 @@ public final class MediaStoreHelper {
      *
      * @param resolver ContentResolver 对象，不能为 null
      * @param decoder  {@link Decoder} 对象，不能为 null
-     * @param <T>      与媒体文件相关的实体类型
-     * @return {@link Scanner} 对象，调用该对象的 {@link Scanner#scan(OnScanCallback)} 方法即可开始扫描本地媒体文件
+     * @param <T>      媒体文件对应的实体类型
+     * @return {@link Scanner} 对象，调用该对象的 {@code scan()} 方法即可开始扫描本地媒体文件
      */
     public static <T> Scanner<T> scanImages(@NonNull ContentResolver resolver, @NonNull Decoder<T> decoder) {
         ObjectUtil.requireNonNull(resolver);
@@ -92,7 +99,10 @@ public final class MediaStoreHelper {
     /**
      * 扫描器。
      *
-     * @param <T>
+     * @param <T> 媒体文件对应的实体类型
+     * @see MediaStoreHelper#scanAudio(ContentResolver, Decoder)
+     * @see MediaStoreHelper#scanVideo(ContentResolver, Decoder)
+     * @see MediaStoreHelper#scanImages(ContentResolver, Decoder)
      */
     public interface Scanner<T> {
         int MIN_UPDATE_THRESHOLD = 200;
@@ -141,7 +151,7 @@ public final class MediaStoreHelper {
     /**
      * 扫描器回调接口。
      *
-     * @param <T> 媒体文件对应的实体类型。
+     * @param <T> 媒体文件对应的实体类型
      */
     public interface OnScanCallback<T> {
         /**
@@ -169,7 +179,7 @@ public final class MediaStoreHelper {
     /**
      * 解码器，用于将 Cursor 中扫描到的媒体文件转换成对应的实体对象。
      *
-     * @param <T> 要转换成的实体类型
+     * @param <T> 媒体文件对应的实体类型
      */
     public static abstract class Decoder<T> {
         /**
