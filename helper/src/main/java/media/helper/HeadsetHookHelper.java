@@ -9,7 +9,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * 用于帮助处理耳机上的按钮点击事件（用于实现 “线控播放”）。
+ * 用于帮助处理耳机上的 Headset Hook 按钮点击事件（用于实现 “线控播放”）。
  * <p>
  * 使用步骤：<br>
  * <ol>
@@ -45,7 +45,7 @@ public class HeadsetHookHelper {
      * <p>
      * 默认的点击事件时间间隔为 300 毫秒。
      *
-     * @param listener 点击事件监听器
+     * @param listener 点击事件监听器，不能为 null
      */
     public HeadsetHookHelper(@NonNull OnHeadsetHookClickListener listener) {
         this(DEFAULT_CLICK_INTERVAL, listener);
@@ -55,7 +55,7 @@ public class HeadsetHookHelper {
      * 使用 {@code clickInterval} 参数指定的点击事件时间间隔构造一个 HeadsetHookHelper 对象。
      *
      * @param clickInterval 两次点击事件的最大时间间隔（单位：毫秒）
-     * @param listener      点击事件监听器
+     * @param listener      点击事件监听器，不能为 null
      */
     public HeadsetHookHelper(int clickInterval, @NonNull OnHeadsetHookClickListener listener) {
         mClickCounter = new ClickCounter(clickInterval, listener);
@@ -83,15 +83,20 @@ public class HeadsetHookHelper {
         return false;
     }
 
-    public void consumeMediaButtonEvent(KeyEvent keyEvent) {
+    private void consumeMediaButtonEvent(KeyEvent keyEvent) {
         if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
             mClickCounter.putEvent();
         }
     }
 
+    /**
+     * 用于监听 Headset Hook 按钮的点击次数。
+     */
     public interface OnHeadsetHookClickListener {
         /**
-         * @param clickCount 按钮被点击的次数
+         * 当检测到 Headset Hook 按钮被单次或连续点击时，会调用该方法。
+         *
+         * @param clickCount Headset Hook 按钮被点击的次数
          */
         void onHeadsetHookClicked(int clickCount);
     }

@@ -22,6 +22,12 @@ public class BecomeNoiseHelper {
     private BroadcastReceiver mBecomeNoiseReceiver;
     private boolean mRegistered;
 
+    /**
+     * 创建一个 {@link BecomeNoiseHelper} 对象。
+     *
+     * @param context  Context 对象，不能为 null
+     * @param listener 事件监听器，不能为 null
+     */
     public BecomeNoiseHelper(@NonNull Context context, @NonNull final OnBecomeNoiseListener listener) {
         ObjectUtil.requireNonNull(context);
         ObjectUtil.requireNonNull(listener);
@@ -60,11 +66,11 @@ public class BecomeNoiseHelper {
     }
 
     /**
-     * 回调接口。
+     * 用于监听 become noise 事件。
      */
     public interface OnBecomeNoiseListener {
         /**
-         * 此时应暂停播放。
+         * 当监听到 become noise 事件时会调用该方法，此时应暂停播放。
          */
         void onBecomeNoise();
     }

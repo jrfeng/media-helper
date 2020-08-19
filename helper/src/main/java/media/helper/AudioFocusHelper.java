@@ -38,6 +38,12 @@ public class AudioFocusHelper {
     private boolean mLossTransient;
     private boolean mLossTransientCanDuck;
 
+    /**
+     * 创建一个 {@link AudioFocusHelper} 对象。
+     *
+     * @param context  Context 对象，不能为 null
+     * @param listener 事件监听器，不能为 null
+     */
     public AudioFocusHelper(@NonNull Context context,
                             @NonNull OnAudioFocusChangeListener listener) {
         ObjectUtil.requireNonNull(context);
@@ -146,7 +152,7 @@ public class AudioFocusHelper {
     }
 
     /**
-     * 回调接口，可用于监听当前应用程序的音频焦点的获取与丢失。
+     * 可用于监听当前应用程序的音频焦点的获取与丢失。
      */
     public interface OnAudioFocusChangeListener {
         /**
@@ -166,6 +172,9 @@ public class AudioFocusHelper {
 
         /**
          * 重新获取到音频焦点。
+         * <p>
+         * 如果应用因 {@link #onLossTransientCanDuck()} 事件而降低了音量（lossTransientCanDuck 参数为 true），
+         * 那么此时应恢复正常的音量。
          *
          * @param lossTransient        指示音频焦点是否是暂时性丢失，如果是，则此时可以恢复播放。
          * @param lossTransientCanDuck 指示音频焦点是否是可降低音量的暂时性丢失，如果是，则此时只需恢复音量即可。

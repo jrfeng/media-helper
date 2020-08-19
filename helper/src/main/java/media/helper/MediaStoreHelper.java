@@ -20,6 +20,11 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 用于帮助扫描本地的音频、视频和图片媒体。
+ * <p>
+ * <b>注意！扫描本地媒体文件必须申请存储器访问权限：{@code "android.permission.READ_EXTERNAL_STORAGE"}。</b>
+ */
 public final class MediaStoreHelper {
     private static Executor mExecutor = new ThreadPoolExecutor(
             Runtime.getRuntime().availableProcessors(),
@@ -39,6 +44,14 @@ public final class MediaStoreHelper {
         throw new AssertionError();
     }
 
+    /**
+     * 扫描本地的音频文件。
+     *
+     * @param resolver ContentResolver 对象，不能为 null
+     * @param decoder  {@link Decoder} 对象，不能为 null
+     * @param <T>      与媒体文件相关的实体类型
+     * @return {@link Scanner} 对象，调用该对象的 {@link Scanner#scan(OnScanCallback)} 方法即可开始扫描本地媒体文件
+     */
     public static <T> Scanner<T> scanAudio(@NonNull ContentResolver resolver, @NonNull Decoder<T> decoder) {
         ObjectUtil.requireNonNull(resolver);
         ObjectUtil.requireNonNull(decoder);
@@ -46,6 +59,14 @@ public final class MediaStoreHelper {
         return new AudioScanner<>(resolver, decoder);
     }
 
+    /**
+     * 扫描本地的视频文件。
+     *
+     * @param resolver ContentResolver 对象，不能为 null
+     * @param decoder  {@link Decoder} 对象，不能为 null
+     * @param <T>      与媒体文件相关的实体类型
+     * @return {@link Scanner} 对象，调用该对象的 {@link Scanner#scan(OnScanCallback)} 方法即可开始扫描本地媒体文件
+     */
     public static <T> Scanner<T> scanVideo(@NonNull ContentResolver resolver, @NonNull Decoder<T> decoder) {
         ObjectUtil.requireNonNull(resolver);
         ObjectUtil.requireNonNull(decoder);
@@ -53,6 +74,14 @@ public final class MediaStoreHelper {
         return new VideoScanner<>(resolver, decoder);
     }
 
+    /**
+     * 扫描本地的图片文件。
+     *
+     * @param resolver ContentResolver 对象，不能为 null
+     * @param decoder  {@link Decoder} 对象，不能为 null
+     * @param <T>      与媒体文件相关的实体类型
+     * @return {@link Scanner} 对象，调用该对象的 {@link Scanner#scan(OnScanCallback)} 方法即可开始扫描本地媒体文件
+     */
     public static <T> Scanner<T> scanImages(@NonNull ContentResolver resolver, @NonNull Decoder<T> decoder) {
         ObjectUtil.requireNonNull(resolver);
         ObjectUtil.requireNonNull(decoder);
@@ -60,15 +89,32 @@ public final class MediaStoreHelper {
         return new ImagesScanner<>(resolver, decoder);
     }
 
+    /**
+     * 扫描器。
+     *
+     * @param <T>
+     */
     public interface Scanner<T> {
         int MIN_UPDATE_THRESHOLD = 200;
 
+        /**
+         * 设置 ContentResolver.query 方法的 projection 部分参数。
+         */
         Scanner<T> projection(String[] projection);
 
+        /**
+         * 设置 ContentResolver.query 方法的 selection 部分参数。
+         */
         Scanner<T> selection(String selection);
 
+        /**
+         * 设置 ContentResolver.query 方法的 selectionArgs 部分参数。
+         */
         Scanner<T> selectionArgs(String[] args);
 
+        /**
+         * 设置 ContentResolver.query 方法的 sortOrder 部分参数。
+         */
         Scanner<T> sortOrder(String sortOrder);
 
         /**
@@ -79,20 +125,59 @@ public final class MediaStoreHelper {
          */
         Scanner<T> updateThreshold(int threshold);
 
+        /**
+         * 取消扫描。
+         */
         void cancel();
 
+        /**
+         * 开始扫描。
+         *
+         * @param callback 回调接口，不能为 null
+         */
         void scan(@NonNull OnScanCallback<T> callback);
     }
 
+    /**
+     * 扫描器回调接口。
+     *
+     * @param <T> 媒体文件对应的实体类型。
+     */
     public interface OnScanCallback<T> {
+        /**
+         * 开始扫描。
+         */
         void onStartScan();
 
+        /**
+         * 更新扫描进度。
+         *
+         * @param progress 当前扫描进度
+         * @param max      最大扫描进度
+         * @param item     当前扫描到的媒体文件对应的实体对象
+         */
         void onUpdateProgress(int progress, int max, T item);
 
+        /**
+         * 接收扫描。
+         *
+         * @param items 所有扫描到的媒体文件
+         */
         void onFinished(List<T> items);
     }
 
+    /**
+     * 解码器，用于将 Cursor 中扫描到的媒体文件转换成对应的实体对象。
+     *
+     * @param <T> 要转换成的实体类型
+     */
     public static abstract class Decoder<T> {
+        /**
+         * 将 Cursor 中当前 index 处的行数据转换成对应的实体对象。
+         *
+         * @param cursor Cursor 对象。Cursor 的 index 已自动设置好，无需手动设置。
+         * @return 行数据对应的实体对象
+         */
         public abstract T decode(Cursor cursor);
 
         public static int getDateAdded(Cursor cursor) {
@@ -266,7 +351,12 @@ public final class MediaStoreHelper {
         }
     }
 
-    private static abstract class BaseScanner<T> implements Scanner<T> {
+    /**
+     * 扫描器基类，该类实现了扫描器的基本功能。
+     *
+     * @param <T> 媒体文件对应的实体类型。
+     */
+    public static abstract class BaseScanner<T> implements Scanner<T> {
         private String[] mProjection;
         private String mSelection;
         private String[] mSelectionArgs;
