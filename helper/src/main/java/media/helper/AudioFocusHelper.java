@@ -38,6 +38,8 @@ public class AudioFocusHelper {
     private boolean mLossTransient;
     private boolean mLossTransientCanDuck;
 
+    private boolean mRequested;
+
     /**
      * 创建一个 {@link AudioFocusHelper} 对象。
      *
@@ -103,6 +105,8 @@ public class AudioFocusHelper {
             return AudioManager.AUDIOFOCUS_REQUEST_FAILED;
         }
 
+        mRequested = true;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return requestAudioFocusAPI26(streamType, durationHint);
         }
@@ -133,9 +137,11 @@ public class AudioFocusHelper {
      * （主动）放弃音频焦点。
      */
     public void abandonAudioFocus() {
-        if (mAudioManager == null) {
+        if (mAudioManager == null || !mRequested) {
             return;
         }
+
+        mRequested = false;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             abandonAudioFocusAPI26();
