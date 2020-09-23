@@ -1,6 +1,8 @@
 package media.helper;
 
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.KeyEvent;
 
 import androidx.annotation.NonNull;
@@ -106,10 +108,12 @@ public class HeadsetHookHelper {
         private int mCount;
         private Timer mTimer;
         private OnHeadsetHookClickListener mHeadsetHookClickListener;
+        private Handler mMainHandler;
 
         ClickCounter(int clickInterval, OnHeadsetHookClickListener listener) {
             mClickInterval = clickInterval;
             mHeadsetHookClickListener = listener;
+            mMainHandler = new Handler(Looper.getMainLooper());
         }
 
         void reset() {
@@ -129,10 +133,19 @@ public class HeadsetHookHelper {
             mTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
+                    notifyClicked();
+                }
+            }, mClickInterval);
+        }
+
+        private void notifyClicked() {
+            mMainHandler.post(new Runnable() {
+                @Override
+                public void run() {
                     mHeadsetHookClickListener.onHeadsetHookClicked(mCount);
                     mCount = 0;
                 }
-            }, mClickInterval);
+            });
         }
 
         private void cancelTimer() {
