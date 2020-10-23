@@ -210,6 +210,10 @@ public final class MediaStoreHelper {
             return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE));
         }
 
+        public static int getDuration(Cursor cursor) {
+            return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DURATION));
+        }
+
         public static String getTitle(Cursor cursor) {
             return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.TITLE));
         }
