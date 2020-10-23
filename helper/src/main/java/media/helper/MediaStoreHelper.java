@@ -306,14 +306,17 @@ public final class MediaStoreHelper {
             return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.LANGUAGE));
         }
 
+        @Deprecated
         public static float getVideoLatitude(Cursor cursor) {
             return cursor.getFloat(cursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.LATITUDE));
         }
 
+        @Deprecated
         public static float getVideoLongitude(Cursor cursor) {
             return cursor.getFloat(cursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.LONGITUDE));
         }
 
+        @Deprecated
         public static int getVideoMiniThumbMagic(Cursor cursor) {
             return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.MINI_THUMB_MAGIC));
         }
@@ -344,18 +347,22 @@ public final class MediaStoreHelper {
             return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.IS_PRIVATE)) != 0;
         }
 
+        @Deprecated
         public static float getImageLatitude(Cursor cursor) {
             return cursor.getFloat(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.LATITUDE));
         }
 
+        @Deprecated
         public static float getImageLongitude(Cursor cursor) {
             return cursor.getFloat(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.LONGITUDE));
         }
 
+        @Deprecated
         public static int getImageMiniThumbMagic(Cursor cursor) {
             return cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.MINI_THUMB_MAGIC));
         }
 
+        @Deprecated
         public static String getImagePicasaId(Cursor cursor) {
             return cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.PICASA_ID));
         }
