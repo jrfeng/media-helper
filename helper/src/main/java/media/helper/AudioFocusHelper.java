@@ -56,7 +56,16 @@ public class AudioFocusHelper {
         initAudioFocusChangeListener();
     }
 
-    private void initAudioFocusChangeListener() {
+    public AudioFocusHelper(@NonNull Context context,
+                            @NonNull AudioManager.OnAudioFocusChangeListener listener) {
+        ObjectUtil.requireNonNull(context);
+        ObjectUtil.requireNonNull(listener);
+
+        mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        mAudioFocusChangeListener = listener;
+    }
+
+   private void initAudioFocusChangeListener() {
         mAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
             @Override
             public void onAudioFocusChange(int focusChange) {
